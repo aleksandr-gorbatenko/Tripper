@@ -1,7 +1,7 @@
 // lib/main.dart
 import 'package:flutter/cupertino.dart';
-import 'landing_page.dart';
-import 'main_app_pages.dart';
+import 'Screens/landing_page.dart';
+import 'Screens/main_app_pages.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {

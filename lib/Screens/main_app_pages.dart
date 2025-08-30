@@ -1,5 +1,8 @@
 // lib/screens/main_app_screen.dart
 import 'package:flutter/cupertino.dart';
+import '../Widgets/trips_widget.dart';
+import '../Widgets/offers_widget.dart';
+import '../Widgets/profile_widget.dart';
 
 class MainAppPages extends StatefulWidget {
   const MainAppPages({super.key});
@@ -64,34 +67,6 @@ class _MainAppPagesState extends State<MainAppPages> {
     );
   }
 
-  Widget _tripsPage() {
-    return TripsGrid(
-      trips: [
-        "Barcelona",
-        "Tokyo",
-        "Berlin",
-        "Vienna",
-      ],
-    );
-  }
-
-  Widget _offersPage() {
-    return Text("data");
-  }
-
-  Widget _friendsPage() {
-    return Text("data");
-  }
-
-  Widget _page(String label) {
-    return Center(
-      child: Text(
-        label,
-        style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -106,11 +81,9 @@ class _MainAppPagesState extends State<MainAppPages> {
                 controller: _pageController,
                 onPageChanged: (i) => setState(() => _currentIndex = i),
                 children: [
-                  //_friendsPage(),
-                  _page("1"),
-                  _tripsPage(),
-                  _page("3"),
-                  //_offersPage(),
+                  ProfileWidget(),
+                  TripsWidget(),
+                  OffersWidget(),
                 ],
               ),
             ),
@@ -121,51 +94,3 @@ class _MainAppPagesState extends State<MainAppPages> {
   }
 }
 
-class TripsGrid extends StatelessWidget {
-  final List<String> trips;
-
-  const TripsGrid({super.key, required this.trips});
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1,
-      ),
-      itemCount: trips.length,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return _TripCard(title: " ");
-        }
-        return _TripCard(title: trips[index]);
-      },
-    );
-  }
-}
-
-class _TripCard extends StatelessWidget {
-  final String title;
-
-  const _TripCard({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: CupertinoColors.systemGrey5,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-}
