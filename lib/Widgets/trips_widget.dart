@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'card_widget.dart';
 
 class TripsWidget extends StatefulWidget {
   const TripsWidget({super.key});
@@ -7,30 +8,34 @@ class TripsWidget extends StatefulWidget {
   State<TripsWidget> createState() => _TripsWidget();
 }
 
-class _TripsWidget extends State<TripsWidget>{
+class _TripsWidget extends State<TripsWidget> {
+  List<String> trips = ["Barcelona", "Tokyo", "Berlin", "Vienna"];
 
-  @override
-  Widget build( context) {
-    return TripsGrid(
-      trips: [
-        "Barcelona",
-        "Tokyo",
-        "Berlin",
-        "Vienna",
-      ],
-    );;
+  Widget _addCard() {
+    return BaseCard(
+      onTap: () => {
+        setState(() {
+          trips.add("New Trip");
+        }),
+      },
+      child: const Icon(CupertinoIcons.add),
+    );
   }
 
-
-}
-
-class TripsGrid extends StatelessWidget {
-  final List<String> trips;
-
-  const TripsGrid({super.key, required this.trips});
+  Widget _tripCard(String title) {
+    return BaseCard(
+      child: Center(
+        child: Text(
+          title,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return GridView.builder(
       padding: const EdgeInsets.all(12),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -39,36 +44,10 @@ class TripsGrid extends StatelessWidget {
         mainAxisSpacing: 12,
         childAspectRatio: 1,
       ),
-      itemCount: trips.length,
+      itemCount: trips.length + 1,
       itemBuilder: (context, index) {
-        if (index == 0) {
-          return _TripCard(title: " ");
-        }
-        return _TripCard(title: trips[index]);
+        return index == 0 ? _addCard() : _tripCard(trips[index - 1]);
       },
-    );
-  }
-}
-
-class _TripCard extends StatelessWidget {
-  final String title;
-
-  const _TripCard({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: CupertinoColors.systemGrey5,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          textAlign: TextAlign.center,
-        ),
-      ),
     );
   }
 }
