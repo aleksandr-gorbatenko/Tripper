@@ -24,11 +24,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     super.dispose();
   }
 
-  void _markLandingPage(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('seenLanding', true);
-  }
-
   Future<void> _submit() async {
     if (_isSubmitting) return;
     setState(() => _isSubmitting = true);
@@ -36,7 +31,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
     await Future<void>.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
 
-    //_markLandingPage(context);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('seenLanding', true);
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       CupertinoPageRoute(builder: (_) => const MainAppPages()),
     );

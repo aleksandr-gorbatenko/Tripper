@@ -4,14 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'registration_page.dart';
 import 'main_app_pages.dart';
 
-class LandingPage extends StatelessWidget {
+class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
 
-  void _markLandingPage(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('seenLanding', true);
-  }
+  @override
+  State<LandingPage> createState() => _LandingPageState();
+}
 
+class _LandingPageState extends State<LandingPage> {
   void _goToRegistration(BuildContext context) {
     Navigator.of(context).push(
       CupertinoPageRoute(builder: (_) => const RegistrationPage()),
@@ -19,10 +19,16 @@ class LandingPage extends StatelessWidget {
   }
 
   void _goToApp(BuildContext context) {
-    //_markLandingPage(context);
     Navigator.of(context).push(
       CupertinoPageRoute(builder: (_) => const MainAppPages()),
     );
+    // Mark landing page as seen in background
+    _markLandingPageSeen();
+  }
+
+  void _markLandingPageSeen() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('seenLanding', true);
   }
 
   @override
