@@ -1,6 +1,7 @@
 // lib/screens/landing_page.dart
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tripper/data/trip_service.dart';
 import 'registration_page.dart';
 import 'main_app_pages.dart';
 
@@ -12,6 +13,18 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
+  @override
+  void initState() {
+    super.initState();
+    TripService().onListenUser((user) {
+      if (user == null) {
+        print('no user');
+      } else {
+        _goToApp(context);
+      }
+    });
+  }
+
   void _goToRegistration(BuildContext context) {
     Navigator.of(context).push(
       CupertinoPageRoute(builder: (_) => const RegistrationPage()),

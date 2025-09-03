@@ -1,76 +1,93 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+class TripService {
+  static final TripService _singleton = TripService._internal();
+  factory TripService() => _singleton;
+  TripService._internal();
+
+  final auth = FirebaseAuth.instance;
+  final currentUser = FirebaseAuth.instance.currentUser;
+  final userId = FirebaseAuth.instance.currentUser?.uid;
+
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+  CollectionReference get _col => _db.collection('users');
+
+  onListenUser(void Function(User?)? doListen) {
+    auth.authStateChanges().listen(doListen);
+  }
+
+  onRegister({required String email, required String password}) async {
+    try {
+      final credential = await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  onLogin({required String email, required String password}) async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
+
+  logOut() async {
+    await auth.signOut();
+  }
+
+  Stream<List<TripDto>> getTrips() {
+    final userDoc = _col.doc(userId);
+    return userDoc.collection('trips')
+        .snapshots()
+        .map((s) => s.docs.map((doc) => TripDto.fromFirestore(doc)).toList());
+  }
+
+  Future<void> addTrip(TripDto trip) async {
+    final userDoc = _col.doc(userId);
+
+    await userDoc.collection('trips').add(trip.toMap());
+  }
+}
+
 class TripDto {
-  final String id;
   final String from;
   final String to;
-  final DateTime start;
-  final DateTime end;
-  final int travelers;
-  final String ownerId;
 
   TripDto({
-    required this.id,
     required this.from,
     required this.to,
-    required this.start,
-    required this.end,
-    required this.travelers,
-    required this.ownerId,
   });
 
   Map<String, dynamic> toMap() => {
     'from': from,
     'to': to,
-    'start': Timestamp.fromDate(start),
-    'end': Timestamp.fromDate(end),
-    'travelers': travelers,
-    'ownerId': ownerId,
     'createdAt': FieldValue.serverTimestamp(),
   };
 
-  static TripDto fromDoc(DocumentSnapshot d) {
-    final m = d.data() as Map<String, dynamic>;
+  factory TripDto.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return TripDto(
-      id: d.id,
-      from: m['from'] ?? '',
-      to: m['to'] ?? '',
-      start: (m['start'] as Timestamp).toDate(),
-      end: (m['end'] as Timestamp).toDate(),
-      travelers: (m['travelers'] ?? 1) as int,
-      ownerId: m['ownerId'] ?? '',
+      from: data['from'] ?? '',
+      to: data['to'] ?? '',
     );
-  }
-}
-
-class TripService {
-  final _db = FirebaseFirestore.instance;
-  final _uid = FirebaseAuth.instance.currentUser!.uid;
-
-  CollectionReference get _col => _db.collection('trips');
-
-  Stream<List<TripDto>> watchMyTrips() => _col
-      .where('ownerId', isEqualTo: _uid)
-      .orderBy('start')
-      .snapshots()
-      .map((s) => s.docs.map(TripDto.fromDoc).toList());
-
-  Future<void> addTrip({
-    required String from,
-    required String to,
-    required DateTime start,
-    required DateTime end,
-    required int travelers,
-  }) {
-    return _col.add(TripDto(
-      id: '',
-      from: from,
-      to: to,
-      start: start,
-      end: end,
-      travelers: travelers,
-      ownerId: _uid,
-    ).toMap());
   }
 }

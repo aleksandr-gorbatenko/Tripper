@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     return CupertinoApp(
       debugShowCheckedModeBanner: false,
       title: 'Tripper',
-      home: seenLanding ? MainAppPages() : const LandingPage(),
+      home:  /*seenLanding ? MainAppPages() :*/ const LandingPage(),
     );
   }
 }

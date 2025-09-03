@@ -1,6 +1,7 @@
 // lib/screens/registration_page.dart
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tripper/data/trip_service.dart';
 import 'main_app_pages.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -14,7 +15,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  bool _isSubmitting = false;
+
+  bool isLogin = false;
+  final TripService tripService = TripService();
 
   @override
   void dispose() {
@@ -24,23 +27,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (_isSubmitting) return;
-    setState(() => _isSubmitting = true);
-
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    if (!mounted) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('seenLanding', true);
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
+  void _register() {
+    tripService.onRegister(email: _emailController.text, password: _passwordController.text);
+    Navigator.of(context).push(
       CupertinoPageRoute(builder: (_) => const MainAppPages()),
     );
   }
 
   Widget _input(String placeholder, TextEditingController controller,
-      {bool obscure = true, TextInputAction action = TextInputAction.next}) {
+      {bool obscure = false, TextInputAction action = TextInputAction.next}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: CupertinoTextField(
@@ -69,18 +64,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               const SizedBox(height: 24),
               _input('Name', _nameController),
-              _input('Email', _emailController, action: TextInputAction.next),
+              _input('Email', _emailController),
               _input('Password', _passwordController, obscure: true, action: TextInputAction.done),
               const SizedBox(height: 24),
               CupertinoButton.filled(
-                onPressed: _isSubmitting ? null : _submit,
-                child: _isSubmitting
-                    ? const CupertinoActivityIndicator()
-                    : const Text('Sign In'),
+                onPressed: () => _register(),
+                child: const Text('Sign In'),
               ),
               const SizedBox(height: 12),
               CupertinoButton(
-                onPressed: _isSubmitting ? null : () => {
+                onPressed: () => {
                   Navigator.of(context).pop(),
                 },
                 child: const Text('Back'),

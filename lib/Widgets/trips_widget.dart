@@ -1,34 +1,35 @@
 import 'package:flutter/cupertino.dart';
+import '../Screens/new_trip_screen.dart';
 import 'card_widget.dart';
+import 'package:tripper/data/trip_service.dart';
 
 class TripsWidget extends StatefulWidget {
   const TripsWidget({super.key});
 
   @override
-  State<TripsWidget> createState() => _TripsWidget();
+  State<TripsWidget> createState() => _TripsWidgetState();
 }
 
-class _TripsWidget extends State<TripsWidget> {
-  List<String> trips = ["Barcelona", "Tokyo", "Berlin", "Vienna"];
+class _TripsWidgetState extends State<TripsWidget> {
+  final TripService tripService = TripService();
 
   Widget _addCard() {
     return BaseCard(
-      onTap: () => {
-        setState(() {
-          trips.add("New Trip");
-        }),
+      onTap: () {
+        Navigator.of(
+          context,
+        ).push(CupertinoPageRoute(builder: (_) => const NewTripScreen()));
       },
       child: const Icon(CupertinoIcons.add),
     );
   }
 
-  Widget _tripCard(String title) {
+  Widget _tripCard(TripDto trip) {
     return BaseCard(
       child: Center(
         child: Text(
-          title,
+          "${trip.from} → ${trip.to}",
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          textAlign: TextAlign.center,
         ),
       ),
     );
@@ -36,17 +37,28 @@ class _TripsWidget extends State<TripsWidget> {
 
   @override
   Widget build(context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1,
-      ),
-      itemCount: trips.length + 1,
-      itemBuilder: (context, index) {
-        return index == 0 ? _addCard() : _tripCard(trips[index - 1]);
+    return StreamBuilder<List<TripDto>>(
+      stream: tripService.getTrips(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CupertinoActivityIndicator());
+        }
+
+        final trips = snapshot.data!;
+
+        return GridView.builder(
+          padding: const EdgeInsets.all(12),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 1,
+          ),
+          itemCount: trips.length + 1,
+          itemBuilder: (context, index) {
+            return index == 0 ? _addCard() : _tripCard(trips[index - 1]);
+          },
+        );
       },
     );
   }
