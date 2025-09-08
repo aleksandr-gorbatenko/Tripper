@@ -1,8 +1,6 @@
 // lib/screens/registration_page.dart
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tripper/data/trip_service.dart';
-import 'main_app_pages.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -29,9 +27,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   void _register() {
     tripService.onRegister(email: _emailController.text, password: _passwordController.text);
-    Navigator.of(context).push(
-      CupertinoPageRoute(builder: (_) => const MainAppPages()),
-    );
   }
 
   Widget _input(String placeholder, TextEditingController controller,
@@ -72,12 +67,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 child: const Text('Sign In'),
               ),
               const SizedBox(height: 12),
-              CupertinoButton(
+              /*CupertinoButton(
                 onPressed: () => {
                   Navigator.of(context).pop(),
                 },
                 child: const Text('Back'),
-              ),
+              ),*/
             ],
           ),
         ),

@@ -2,8 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tripper/data/trip_service.dart';
-import 'registration_page.dart';
-import 'main_app_pages.dart';
+import 'auth_gate.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -13,29 +12,19 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  @override
-  void initState() {
-    super.initState();
-    TripService().onListenUser((user) {
-      if (user == null) {
-        print('no user');
-      } else {
-        _goToApp(context);
-      }
-    });
-  }
+  final TripService tripService = TripService();
 
   void _goToRegistration(BuildContext context) {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (_) => const RegistrationPage()),
+      CupertinoPageRoute(builder: (_) => const AuthGate()),
     );
   }
 
-  void _goToApp(BuildContext context) {
+  Future<void> _goToApp(BuildContext context) async {
+    await tripService.onAnanym();
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (_) => const MainAppPages()),
+      CupertinoPageRoute(builder: (_) => const AuthGate()),
     );
-    // Mark landing page as seen in background
     _markLandingPageSeen();
   }
 
