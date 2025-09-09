@@ -19,10 +19,12 @@ class TripService {
     try {
       final credential = await FirebaseAuth.instance.signInAnonymously();
       final user = credential.user;
-      await FirebaseFirestore.instance.collection('users').doc(user?.uid).set({
-        'isGuest': true,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'isGuest': true,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
     } on FirebaseAuthException catch (e) {
       print("Auth error: ${e.code}");
     }
@@ -65,6 +67,17 @@ class TripService {
     await auth.signOut();
   }
 
+  Stream<TripDto> getTrip(String tripId) {
+    return _db
+        .collection('users')
+        .doc(userId)
+        .collection('trips')
+        .doc(tripId)
+        .snapshots()
+        .map((doc) => TripDto.fromFirestore(doc));
+
+  }
+
   Stream<List<TripDto>> getTrips() {
     if (userId == null) return const Stream.empty();
 
@@ -87,10 +100,11 @@ class TripService {
 }
 
 class TripDto {
+  final String tripId;
   final String from;
   final String to;
 
-  TripDto({required this.from, required this.to});
+  TripDto({required this.tripId, required this.from, required this.to});
 
   Map<String, dynamic> toMap() => {
     'from': from,
@@ -100,6 +114,10 @@ class TripDto {
 
   factory TripDto.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return TripDto(from: data['from'] ?? '', to: data['to'] ?? '');
+    return TripDto(
+      tripId: doc.id,
+      from: data['from'] ?? '',
+      to: data['to'] ?? '',
+    );
   }
 }

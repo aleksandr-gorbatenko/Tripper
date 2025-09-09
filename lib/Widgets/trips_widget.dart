@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import '../Screens/new_trip_screen.dart';
+import '../Screens/trip_page.dart';
 import 'card_widget.dart';
 import 'package:tripper/data/trip_service.dart';
 
@@ -12,6 +13,12 @@ class TripsWidget extends StatefulWidget {
 
 class _TripsWidgetState extends State<TripsWidget> {
   final TripService tripService = TripService();
+
+  void _goToTripPage(String tripId) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(builder: (_) => TripPage(tripId: tripId)),
+    );
+  }
 
   Widget _addCard() {
     return BaseCard(
@@ -32,6 +39,7 @@ class _TripsWidgetState extends State<TripsWidget> {
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
+      onTap: () => _goToTripPage(trip.tripId),
     );
   }
 

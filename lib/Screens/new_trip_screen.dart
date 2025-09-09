@@ -42,6 +42,7 @@ class _NewTripScreenState extends State<NewTripScreen> {
     final trip = TripDto(
       from: _fromController.text,
       to: _toController.text,
+      tripId: '',
     );
 
     await tripService.addTrip(trip);
