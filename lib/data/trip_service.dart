@@ -31,6 +31,7 @@ class TripService {
   }
 
   Future<void> onRegister({
+    required String name,
     required String email,
     required String password,
   }) async {
@@ -43,6 +44,7 @@ class TripService {
       final user = credential.user;
       if (user != null) {
         await _db.collection('users').doc(user.uid).set({
+          'name' : name,
           'email': user.email,
           'createdAt': FieldValue.serverTimestamp(),
         });
@@ -101,14 +103,20 @@ class TripService {
 
 class TripDto {
   final String tripId;
-  final String from;
+  final String where;
   final String to;
+  final String from;
+  final String till;
+  final String group;
 
-  TripDto({required this.tripId, required this.from, required this.to});
+  TripDto({required this.tripId, required this.from, required this.to, required this.where, required this.till, required this.group});
 
   Map<String, dynamic> toMap() => {
-    'from': from,
+    'where': where,
     'to': to,
+    'from': from,
+    'till': till,
+    'group' : group,
     'createdAt': FieldValue.serverTimestamp(),
   };
 
@@ -116,8 +124,11 @@ class TripDto {
     final data = doc.data() as Map<String, dynamic>;
     return TripDto(
       tripId: doc.id,
-      from: data['from'] ?? '',
+      where: data['where'] ?? '',
       to: data['to'] ?? '',
+      from: data['from'] ?? '',
+      till: data['till'] ?? '',
+      group: data['group'] ?? '',
     );
   }
 }

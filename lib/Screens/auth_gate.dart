@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:tripper/Screens/landing_page.dart';
 import 'main_app_pages.dart';
-import 'registration_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -18,7 +18,7 @@ class AuthGate extends StatelessWidget {
         }
 
         if (!snapshot.hasData) {
-          return const RegistrationPage();
+          return LandingPage();
         }
 
         return const MainAppPages();

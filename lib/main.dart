@@ -1,7 +1,7 @@
 // lib/main.dart
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'Screens/landing_page.dart';
+import 'package:tripper/Screens/auth_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoApp(
       debugShowCheckedModeBanner: false,
-      home: LandingPage(),
+      home: AuthGate(),
     );
   }
 }
