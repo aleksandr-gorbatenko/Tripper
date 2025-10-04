@@ -30,6 +30,7 @@ class _MainAppPagesState extends State<MainAppPages> {
     _pageController.dispose();
     super.dispose();
   }
+
   void _onTapAdd() {
     showCupertinoDialog(
       context: context,
@@ -115,16 +116,23 @@ class _MainAppPagesState extends State<MainAppPages> {
             children: List.generate(icons.length, (index) {
               final bool isActive = _currentIndex == index;
               return BaseCard(
-                onTap: () =>  index == 3 ?
-                _onTapAdd() :
-                _pageController.animateToPage(
-                  index,
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeIn,
-                ),
+                onTap: () => index == 3
+                    ? _onTapAdd()
+                    : _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeIn,
+                      ),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Icon(icons[index], color: CupertinoColors.black, size: 50),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
+                  child: Icon(
+                    icons[index],
+                    color: CupertinoColors.black,
+                    size: 50,
+                  ),
                 ),
               );
             }),
@@ -152,17 +160,12 @@ class _MainAppPagesState extends State<MainAppPages> {
               ),
             ),
           ),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (i) => setState(() => _currentIndex = i),
-              children: [TripsWidget(), ProfileWidget(), OffersWidget()],
-            ),
+          PageView(
+            controller: _pageController,
+            onPageChanged: (i) => setState(() => _currentIndex = i),
+            children: [TripsWidget(), ProfileWidget(), OffersWidget()],
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _navBar()
-          ),
+          Align(alignment: Alignment.bottomCenter, child: _navBar()),
         ],
       ),
     );
